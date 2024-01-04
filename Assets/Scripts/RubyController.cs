@@ -1,4 +1,5 @@
 using UnityEngine;
+using static UnityEditor.Searcher.SearcherWindow.Alignment;
 
 public class RubyController : MonoBehaviour
 {
@@ -16,9 +17,13 @@ public class RubyController : MonoBehaviour
     float _horizontal;
     float _vertical;
 
+    Animator _animator;
+    Vector2 _lookDirection = new(1,0);
+    
     void Start()
     {
         _rigidbody = GetComponent<Rigidbody2D>();
+        _animator = GetComponent<Animator>();
 
         ChangeHealth(MaxHealth);
     }
@@ -28,7 +33,19 @@ public class RubyController : MonoBehaviour
         _horizontal = Input.GetAxis("Horizontal");
         _vertical = Input.GetAxis("Vertical");
 
-        if(_isInvincible)//TODO: make countdown into func for more readability
+        Vector2 move = new Vector2(_horizontal, _vertical);
+
+        if (!Mathf.Approximately(move.x, 0.0f) || !Mathf.Approximately(move.y, 0.0f))
+        {
+            _lookDirection.Set(move.x, move.y);
+            _lookDirection.Normalize();
+        }
+
+        _animator.SetFloat("Look X", _lookDirection.x);
+        _animator.SetFloat("Look Y", _lookDirection.y);
+        _animator.SetFloat("Speed", move.magnitude);
+
+        if (_isInvincible)//TODO: make countdown into func for more readability
         {
             _invincibleTimer -= Time.deltaTime;
 
