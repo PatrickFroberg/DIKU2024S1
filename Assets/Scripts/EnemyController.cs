@@ -11,17 +11,23 @@ public class EnemyController : MonoBehaviour
     float _timer;
     Animator _animator;
     int _direction = 1;
+    bool _broken;
 
 
     void Start()
     {
-        _rigidbody2D = GetComponent<Rigidbody2D>();
         _timer = changeTime;
+        _broken = true;
+
+        _rigidbody2D = GetComponent<Rigidbody2D>();
         _animator = GetComponent<Animator>();
     }
 
     void Update()
     {
+        if (!_broken)
+            return;
+
         _timer -= Time.deltaTime;
 
         if (_timer < 0)
@@ -33,6 +39,9 @@ public class EnemyController : MonoBehaviour
 
     void FixedUpdate()
     {
+        if (!_broken)
+            return;
+
         Vector2 position = _rigidbody2D.position;
 
         if (vertical)
@@ -56,5 +65,13 @@ public class EnemyController : MonoBehaviour
     {
         if (other.gameObject.TryGetComponent<RubyController>(out var rubyController))
             rubyController.ChangeHealth(Damage);
+    }
+
+    public void Fix()
+    {
+        _broken = false;
+        _rigidbody2D.simulated = false;
+
+        _animator.SetTrigger("Fixed");
     }
 }

@@ -3,6 +3,8 @@ using static UnityEditor.Searcher.SearcherWindow.Alignment;
 
 public class RubyController : MonoBehaviour
 {
+    public GameObject ProjectilePrefab;
+
     public float Speed = 3.0f;
  
     public int MaxHealth = 5;
@@ -52,6 +54,10 @@ public class RubyController : MonoBehaviour
             if(_invincibleTimer < 0 )
                 _isInvincible = false;
         }
+
+        if (Input.GetButtonDown("Fire1"))
+            Launch();
+
     }
 
     private void FixedUpdate()
@@ -79,5 +85,16 @@ public class RubyController : MonoBehaviour
 
         Health = Mathf.Clamp(Health + amount, 0, MaxHealth);
         Debug.Log(Health + "/" + MaxHealth);
+    }
+
+    void Launch()
+    {
+        GameObject projectileObject = Instantiate(ProjectilePrefab, _rigidbody.position + Vector2.up * 0.5f, Quaternion.identity);
+
+        //TODO: smid i start ?
+        Projectile projectile = projectileObject.GetComponent<Projectile>();
+        projectile.Launch(_lookDirection, 300);
+
+        _animator.SetTrigger("Launch");
     }
 }
