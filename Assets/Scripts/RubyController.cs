@@ -27,7 +27,7 @@ public class RubyController : MonoBehaviour
         _rigidbody = GetComponent<Rigidbody2D>();
         _animator = GetComponent<Animator>();
 
-        ChangeHealth(MaxHealth);
+        Health = MaxHealth;
     }
 
     void Update()
@@ -57,6 +57,19 @@ public class RubyController : MonoBehaviour
 
         if (Input.GetButtonDown("Fire1"))
             Launch();
+
+        if (Input.GetKeyDown(KeyCode.X))
+        {
+            RaycastHit2D hit = Physics2D.Raycast(_rigidbody.position + Vector2.up * 0.2f, _lookDirection, 1.5f, LayerMask.GetMask("NPC"));
+            
+            if (hit.collider != null)
+            {
+                NonPlayerCharacter character = hit.collider.GetComponent<NonPlayerCharacter>();
+
+                if (character != null)
+                    character.DisplayDialog();
+            }
+        }
 
     }
 
