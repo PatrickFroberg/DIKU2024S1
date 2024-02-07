@@ -1,5 +1,4 @@
 using UnityEngine;
-using static UnityEditor.Searcher.SearcherWindow.Alignment;
 
 public class RubyController : MonoBehaviour
 {
@@ -9,6 +8,9 @@ public class RubyController : MonoBehaviour
  
     public int MaxHealth = 5;
     public float TimeInvincible = 2.0f;
+
+    public AudioClip TakeDamageClip;
+    public AudioClip ThrowCogClip;
 
     public int Health { get; private set; }
 
@@ -21,13 +23,14 @@ public class RubyController : MonoBehaviour
 
     Animator _animator;
     Vector2 _lookDirection = new(1,0);
+    AudioSource _audioSource;
     
     void Start()
     {
         _rigidbody = GetComponent<Rigidbody2D>();
         _animator = GetComponent<Animator>();
-
         Health = MaxHealth;
+        _audioSource = GetComponent<AudioSource>();
     }
 
     void Update()
@@ -85,29 +88,34 @@ public class RubyController : MonoBehaviour
 
     public void ChangeHealth(int amount)
     {
-        if (amount < 0)//TODO: Should be a take dmg func insted to avoid if
+        if (amount < 0)
         {
-            //TODO: Sender should not be firing on a Invincible target
-            //Debug.Log("TOO MANY CALLS !! MOVE LOGIC TO SENDER");
             if (_isInvincible)
                 return;
 
             _isInvincible = true;
             _invincibleTimer = TimeInvincible;
+
+            PlaySound(TakeDamageClip);
         }
 
         Health = Mathf.Clamp(Health + amount, 0, MaxHealth);
         UIHealthBar.instance.SetValue(Health / (float)MaxHealth);
     }
 
-    void Launch()
+    public void PlaySound(AudioClip clip)
+    {
+        _audioSource.PlayOneShot(clip);
+    }
+
+    private void Launch()
     {
         GameObject projectileObject = Instantiate(ProjectilePrefab, _rigidbody.position + Vector2.up * 0.5f, Quaternion.identity);
 
-        //TODO: smid i start ?
         Projectile projectile = projectileObject.GetComponent<Projectile>();
         projectile.Launch(_lookDirection, 300);
 
         _animator.SetTrigger("Launch");
+        PlaySound(ThrowCogClip);
     }
 }

@@ -65,7 +65,9 @@ public class EnemyController : MonoBehaviour
     void OnCollisionEnter2D(Collision2D other)
     {
         if (other.gameObject.TryGetComponent<RubyController>(out var rubyController))
+        {
             rubyController.ChangeHealth(Damage);
+        }
     }
 
     public void Fix()
